@@ -1,10 +1,15 @@
 default['nginx']['install_method'] = 'source'
 default['nginx']['version'] = '1.12.2'
 
-default['php']['install_method'] = 'source'
-default['php']['version'] = '7.2.0'
-default['php']['url'] = 'http://fr2.php.net/get'
-default['php']['checksum'] = '801876abd52e0dc58a44701344252035fd50702d8f510cda7fdb317ab79897bc'
+default['php']['packages'] = ['php', 'php-fpm', 'php-pear', 'php-mysqlnd', 'php-pecl-zip']
+default['php']['directives'] = {
+    'date.timezone': 'Europe/Paris',
+    'short_open_tag': 'Off',
+    'session.save_path': '/tmp',
+    'always_populate_raw_post_data': '-1',
+    'memory_limit': '2G'
+}
+
 
 default['phpunit']['install_method'] = 'phar'
 default['phpunit']['phar_url'] = 'https://phar.phpunit.de/phpunit-6.phar'

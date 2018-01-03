@@ -4,19 +4,7 @@
 #
 # Copyright:: 2017, The Authors, All Rights Reserved.
 
-user 'web' do
-    password '123456'    
-    home '/home/web'
-    shell '/bin/bash'  
-end
-
 include_recipe 'nginx'
-
-group 'web' do
-    action :modify
-    members ['nginx', 'web']
-    append true
-end
 
 selinux_state "SELinux Disabled" do
     action :disabled
@@ -31,9 +19,33 @@ mysql_service 'web' do
     action [:create, :start]
 end
 
-include_recipe 'php'
+remote_file "#{Chef::Config[:file_cache_path]}/epel-release-latest-7.noarch.rpm" do
+    source "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+    action :create
+end
 
-include_recipe 'yum-epel'
+rpm_package "epel-release-latest-7" do
+    source "#{Chef::Config[:file_cache_path]}/epel-release-latest-7.noarch.rpm"
+    action :install
+end
+
+remote_file "#{Chef::Config[:file_cache_path]}/remi-release-7.rpm" do
+    source "http://rpms.remirepo.net/enterprise/remi-release-7.rpm"
+    action :create
+end
+
+rpm_package "remi-release-7" do
+    source "#{Chef::Config[:file_cache_path]}/remi-release-7.rpm"
+    action :install
+end
+
+yum_package 'yum-utils'
+
+execute 'enable remi-php72' do
+    command 'yum-config-manager --enable remi-php72'
+end
+
+include_recipe 'php'
 
 include_recipe 'git'
 
@@ -41,5 +53,20 @@ include_recipe 'nodejs' do
     user 'vagrant'
     group 'vagrant'
 end
+
 include_recipe 'composer'
+
 include_recipe 'phpunit'
+
+group 'web' do
+    action :create
+    members ['nginx', 'vagrant', 'apache']
+    append true
+end
+
+directory '/app' do
+    owner 'vagrant'
+    group 'web'
+    mode '0755'
+    action :create
+end

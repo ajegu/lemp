@@ -15,3 +15,7 @@ Depuis une console : `vagrant plugin install vagrant-berkshelf`
 1. Récupérer le projet IHMPLUS-INFRA
 2. Ouvrer une console et aller à la racine de projet
 2. Lancer la commande `vagrant up` 
+
+## Démarrer php-fpm
+
+sudo /usr/local/sbin/php-fpm -c /etc/php.ini --pid /var/run/php-fpm.pid --fpm-config=/usr/local/etc/php-fpm.d/www.conf.default -D
